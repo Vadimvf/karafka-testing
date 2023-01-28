@@ -163,8 +163,10 @@ module Karafka
         # @return [Object] karafka consumer
         def _karafka_build_consumer_for(topic)
           coordinators = Karafka::Processing::CoordinatorsBuffer.new
+          strategy = Karafka::App.config.internal.processing.strategy_selector.find(topic)
 
           consumer = described_class.new
+          consumer.singleton_class.include(strategy)
           consumer.topic = topic
           consumer.producer = Karafka::App.producer
           consumer.client = _karafka_consumer_client
